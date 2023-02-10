@@ -1,4 +1,7 @@
-<script>
+<script lang="ts">
+    import Modal from "./Modal.svelte";
+
+    let customImageUrl;
     let movesSoFar = 0;
     let completed = false;
     const tiles = Array.from({ length: 9 }).map((d, i) => `square${i + 1}`);
@@ -101,22 +104,35 @@
         const reader = new FileReader();
         reader.onload = function (e) {
             const imgURL = e.target.result;
+            customImageUrl = imgURL;
             setBackgroundImage(imgURL);
         };
         reader.readAsDataURL(file);
     }
 
     function setBackgroundImage(imgURL) {
-        const tiles = Array.from({ length: 8 }).map((d, i) => `square${i + 1}`);
-        tiles.forEach((square) => {
-            const element = document.getElementById(square);
-            element.style.backgroundImage = `url(${imgURL})`;
+        document.querySelectorAll(".puzzle-square").forEach((square: any) => {
+            square.style.backgroundImage = `url(${imgURL})`;
         });
         shuffledGridInfo = shuffleMap(gridInfo);
     }
 </script>
 
-<input type="file" id="fileInput" on:change={handleFileSelect} />
+<center>
+    <h1 style:color={"white"}>Slide Puzzle</h1>
+</center>
+
+{#if !completed}
+    <div style:color={"white"} style:padding-block={"1rem"}>
+        Select custom image:
+        <input
+            type="file"
+            id="fileInput"
+            on:change={handleFileSelect}
+            accept="image/*"
+        />
+    </div>
+{/if}
 
 <div class="puzzle-container">
     {#each tiles as tile}
@@ -127,6 +143,7 @@
             style:grid-column={shuffledGridInfo.get(tile).column}
             style:grid-row={shuffledGridInfo.get(tile).row}
             on:keypress={moveTile.bind(null, tile)}
+            style:backgroundImage={customImageUrl && customImageUrl}
         >
             <div
                 class="tileNumber"
@@ -140,16 +157,15 @@
     {/each}
 </div>
 
-<div>
-    {completed
-        ? `Hooray! you completed in ${movesSoFar + 1} moves`
-        : `Your moves: ${movesSoFar}`}
-</div>
+<Modal isOpen={completed}>
+    <h2>Congratulations!🥳💯👏</h2>
+    <div>You completed the puzzle in {movesSoFar + 1} moves</div>
+</Modal>
 
 <style>
     .puzzle-container {
-        width: 38rem;
-        height: 38rem;
+        width: 34rem;
+        height: 34rem;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(3, 1fr);
@@ -158,7 +174,6 @@
     .puzzle-square {
         float: left;
         margin: 3px;
-        /* background-image: url("https://source.unsplash.com/300x300/?random"); */
         background-image: url("favicon.jpg");
         background-size: 300% 300%;
         font-size: large;
@@ -170,9 +185,9 @@
         background-color: #aaa6a4;
         height: auto;
         width: 1rem;
-        position: absolute;
+        position: relative;
         margin: 0.5rem;
-        margin-left: 10rem;
+        /* left: 10rem; */
         border-radius: 1rem;
         padding: 0.05rem;
         border: 2px solid #3a4042;
@@ -229,5 +244,13 @@
         background-position-y: 99.9%;
         background-size: 300% 300%;
         border: 2px solid #aaa6a4;
+    }
+
+    @media (max-width: 767px) {
+        .puzzle-container {
+            width: 20rem;
+            height: 20rem;
+            margin: 0 auto;
+        }
     }
 </style>
