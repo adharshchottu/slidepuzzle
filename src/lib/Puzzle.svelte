@@ -158,8 +158,10 @@
 </div>
 
 <Modal isOpen={completed}>
-    <h2>Congratulations!🥳💯👏</h2>
-    <div>You completed the puzzle in {movesSoFar + 1} moves</div>
+    <h2 style:color={"#6c95ec"}>Congratulations!🥳💯👏</h2>
+    <div style:color={"#6c95ec"}>
+        You completed the puzzle in {movesSoFar + 1} moves
+    </div>
 </Modal>
 
 <style>
